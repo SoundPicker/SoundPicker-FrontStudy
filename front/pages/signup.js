@@ -1,11 +1,17 @@
 import React from 'react'
+import Head from 'next/head'
 import AppLayout from '../components/AppLayout'
 
 const Signup = () => {
   return (
-    <AppLayout>
-      <div>Sign Up</div>
-    </AppLayout>
+    <>
+      <Head>
+        <title>회원가입 | nodebird</title>
+      </Head>
+      <AppLayout>
+        <div>Sign Up</div>
+      </AppLayout>
+    </>
   )
 }
 
