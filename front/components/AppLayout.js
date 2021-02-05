@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Link from 'next/link'
-import { Menu } from 'antd'
+import { Input, Menu, Row, Col } from 'antd'
 
 const AppLayout = ({ children }) => {
   return (
@@ -18,12 +18,28 @@ const AppLayout = ({ children }) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
+          <Input.Search enterButton style={{ verticalAlign: 'middle' }} />
+        </Menu.Item>
+        <Menu.Item>
           <Link href="/signup">
             <a>회원가입</a>
           </Link>
         </Menu.Item>
       </Menu>
-      {children}
+      <Row gutter={8}>
+        {/* 25% / 50% / 25% */}
+        <Col xs={24} md={6}>
+          왼쪽메뉴
+        </Col>
+        <Col xs={24} md={12}>
+          {children}
+        </Col>
+        <Col xs={24} md={6}>
+          <a href="google.com" target="_blank" rel="noreferrer noopener">
+            구글
+          </a>
+        </Col>
+      </Row>
     </div>
   )
 }

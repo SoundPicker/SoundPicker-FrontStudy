@@ -10,7 +10,7 @@ const NodeBird = ({ Component }) => {
       <Head>
         <title>NodeBird</title>
       </Head>
-      <div>공통</div>
+      {/* <div>공통</div> */}
       <Component />
     </>
   )
