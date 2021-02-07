@@ -17,5 +17,3 @@
 ![스크린샷 2021-01-27 오전 1 42 44](https://user-images.githubusercontent.com/26538967/105876064-ea997b80-6041-11eb-9489-564ec21f79c9.png)
 
 ![스크린샷 2021-01-27 오전 1 42 52](https://user-images.githubusercontent.com/26538967/105876076-eec59900-6041-11eb-81a1-87aab1610745.png)
-
-
