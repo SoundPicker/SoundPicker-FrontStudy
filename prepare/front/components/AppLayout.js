@@ -1,11 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Link from "next/link";
+import { useState } from "react";
 import { Input, Menu, Row, Col } from "antd";
+import styled from "styled-components";
+
+import UserProfile from "../components/UserProfile";
+import LoginForm from "../components/LoginForm";
+
+const SearchInput = styled(Input.Search)`
+  vertical-align: middle;
+`;
 
 // 특정 컴포넌트끼리 공통인 애는 레이아웃으로 만들어
 // 개별 컴포넌트를 감싸면 됨
 const AppLayout = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <div>
       <Menu mode="horizontal">
@@ -20,10 +30,7 @@ const AppLayout = ({ children }) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <Input.Search
-            enterButton="Search"
-            style={{ verticalAlign: "middle" }}
-          />
+          <SearchInput enterButton />
         </Menu.Item>
         <Menu.Item>
           <Link href="/signup">
@@ -35,7 +42,7 @@ const AppLayout = ({ children }) => {
       {/* 24를 넘지 않으면 한 줄로 표현, 아니면 넘어간다 */}
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          왼쪽 메뉴
+          {isLoggedIn ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
