@@ -29,7 +29,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
   }, [id, password]);
 
   return (
-    <FormWrapper onfinish={onSubmitForm}>
+    <FormWrapper onFinish={onSubmitForm}>
       <div>
         <label htmlFor="user-id">아이디</label>
         <br />
