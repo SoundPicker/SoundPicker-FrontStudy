@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Form, Input, Button } from "antd";
 import Link from "next/link";
 import styled from "styled-components";
@@ -27,13 +27,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
       <div>
         <label htmlFor="user-id">아이디</label>
         <br />
-        <Input
-          name="user-id"
-          type="email"
-          value={id}
-          onChange={onChangeId}
-          required
-        />
+        <Input name="user-id" value={id} onChange={onChangeId} required />
       </div>
       <div>
         <label htmlFor="user-password">비밀번호</label>
