@@ -25,10 +25,10 @@ const Signup = () => {
     [password]
   );
 
-  const [term, setTerm] = useState("");
+  const [term, setTerm] = useState(false);
   const [termError, setTermError] = useState(false);
   const onChangeTerm = useCallback((e) => {
-    setTerm(e.target.value);
+    setTerm(e.target.checked);
     setTermError(false);
   });
 

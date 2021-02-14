@@ -56,7 +56,7 @@ const AppLayout = ({ children }) => {
           <a
             href="https://github.com/ksmself"
             target="_blank"
-            ref="noreferrer noopener"
+            rel="noreferrer noopener"
           >
             Made by SeungmiKim
           </a>
