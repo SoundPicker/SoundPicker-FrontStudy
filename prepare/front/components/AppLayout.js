@@ -1,7 +1,7 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import Link from "next/link";
-import { useState } from "react";
 import { Input, Menu, Row, Col } from "antd";
 import styled from "styled-components";
 
@@ -15,7 +15,9 @@ const SearchInput = styled(Input.Search)`
 // 특정 컴포넌트끼리 공통인 애는 레이아웃으로 만들어
 // 개별 컴포넌트를 감싸면 됨
 const AppLayout = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // isLoggedIn이 바뀌면 컴포넌트가 알아서 리렌더링된다.
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+
   return (
     <div>
       <Menu mode="horizontal">
@@ -42,11 +44,7 @@ const AppLayout = ({ children }) => {
       {/* 24를 넘지 않으면 한 줄로 표현, 아니면 넘어간다 */}
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          {isLoggedIn ? (
-            <UserProfile setIsLoggedIn={setIsLoggedIn} />
-          ) : (
-            <LoginForm setIsLoggedIn={setIsLoggedIn} />
-          )}
+          {isLoggedIn ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
