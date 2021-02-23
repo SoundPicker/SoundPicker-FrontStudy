@@ -13,7 +13,7 @@ export const initialState = {
         },
         {
           src:
-            "https://lh3.googleusercontent.com/proxy/gzU3L7TM9yXgYHr6MsSWxR3l-l1_R4UTK-bEh7yc1nrfLAUT0pajJyUF5UaqWx0dxTVUKVnwN_JZ8XEkXARl8vFPPXsoUYy3AtfRFO-zBVl5r6pYehydc2l6x9ytAovZtb_GYc3tGUOi4dgwfB1MZACeMJ394zPg0o7onCXrxHF4WnKaKyhYw0kKTNeX89ZYsuc9veMKXMd05LKUijFhPkKetCFEfssrHlAWINRVVWvLb5L1V0RdFrJa8hWvaEYFggQspE-rSpXB4sPxQIFlM9I7Fe-E8_wLT5XAL9IJa2rLT_RWtC_Zn-O52MukEPfTefTR4v8NT4bMgmr9",
+            "https://user-images.githubusercontent.com/1305982/50403650-44804500-07db-11e9-98aa-cfee9a9aec69.png",
         },
         {
           src:
