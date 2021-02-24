@@ -1,15 +1,30 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
-import Link from "next/link";
-import { Input, Menu, Row, Col } from "antd";
-import styled from "styled-components";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import Link from 'next/link';
+import { Input, Menu, Row, Col } from 'antd';
+import styled, { createGlobalStyle } from 'styled-components';
 
-import UserProfile from "../components/UserProfile";
-import LoginForm from "../components/LoginForm";
+import UserProfile from '../components/UserProfile';
+import LoginForm from '../components/LoginForm';
 
 const SearchInput = styled(Input.Search)`
   vertical-align: middle;
+`;
+
+const Global = createGlobalStyle`
+  .ant-row{
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .ant-col:first-child{
+    padding-left: 0 !important; 
+  }
+
+  .ant-col:last-child{
+    padding-right: 0 !important; 
+  }
 `;
 
 // 특정 컴포넌트끼리 공통인 애는 레이아웃으로 만들어
@@ -20,6 +35,7 @@ const AppLayout = ({ children }) => {
 
   return (
     <div>
+      <Global />
       <Menu mode="horizontal">
         <Menu.Item>
           <Link href="/">

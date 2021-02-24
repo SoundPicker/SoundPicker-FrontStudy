@@ -1,17 +1,18 @@
-import React, { useState, useCallback } from "react";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
-import { Card, Popover, Button, Avatar, List, Comment } from "antd";
+import React, { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Card, Popover, Button, Avatar, List, Comment } from 'antd';
 import {
   RetweetOutlined,
   HeartOutlined,
   HeartTwoTone,
   MessageOutlined,
   EllipsisOutlined,
-} from "@ant-design/icons";
+} from '@ant-design/icons';
 
-import PostImages from "./PostImage";
-import CommentForm from "./CommentForm";
+import PostImages from './PostImage';
+import CommentForm from './CommentForm';
+import PostCardContent from './PostCardContent';
 
 const PostCard = ({ post }) => {
   const [liked, setLiked] = useState(false);
@@ -62,7 +63,7 @@ const PostCard = ({ post }) => {
         <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
-          description={post.content}
+          description={<PostCardContent postData={post.content} />}
         />
       </Card>
       {commentFormOpened && (
