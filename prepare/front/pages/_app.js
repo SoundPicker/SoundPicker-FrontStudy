@@ -1,9 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Head from "next/head";
-import "antd/dist/antd.css";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Head from 'next/head';
+import 'antd/dist/antd.css';
+import withReduxSaga from 'next-redux-saga';
 
-import wrapper from "../store/configureStore";
+import wrapper from '../store/configureStore';
 
 // Component에 index.js, profile.js ... 등이 들어감
 // 쟤들의 부모인 셈. 모든 페이지에서 공통으로 적용하고 싶은 게 있다면 이런 식으로
@@ -24,4 +25,4 @@ NodeBird.propTypes = {
   Component: PropTypes.elementType.isRequired,
 };
 
-export default wrapper.withRedux(NodeBird);
+export default wrapper.withRedux(withReduxSaga(NodeBird));
