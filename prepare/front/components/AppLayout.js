@@ -31,7 +31,7 @@ const Global = createGlobalStyle`
 // 개별 컴포넌트를 감싸면 됨
 const AppLayout = ({ children }) => {
   // isLoggedIn이 바뀌면 컴포넌트가 알아서 리렌더링된다.
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const { me } = useSelector((state) => state.user);
 
   return (
     <div>
@@ -60,7 +60,7 @@ const AppLayout = ({ children }) => {
       {/* 24를 넘지 않으면 한 줄로 표현, 아니면 넘어간다 */}
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {me ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
