@@ -1,3 +1,7 @@
+import shortId from 'shortid';
+import produce from 'immer';
+import faker from 'faker';
+
 export const initialState = {
   mainPosts: [
     {
@@ -9,26 +13,33 @@ export const initialState = {
       content: '첫 번째 게시글 #해시태그 #익스프레스',
       Images: [
         {
+          id: shortId.generate(),
           src: 'https://www.daangn.com/images/meta/home/daangn.png',
         },
         {
+          id: shortId.generate(),
           src:
             'https://user-images.githubusercontent.com/1305982/50403650-44804500-07db-11e9-98aa-cfee9a9aec69.png',
         },
         {
+          id: shortId.generate(),
           src:
             'https://platum.kr/wp-content/uploads/2020/09/daangn_mau1000.jpg',
         },
       ],
       Comments: [
         {
+          id: shortId.generate(),
           User: {
+            id: shortId.generate(),
             nickname: 'nero',
           },
           content: '우와 개정판이 나왔군요~',
         },
         {
+          id: shortId.generate(),
           User: {
+            id: shortId.generate(),
             nickname: 'hero',
           },
           content: '얼른 사고싶어요~',
@@ -40,15 +51,49 @@ export const initialState = {
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
+  removePostLoading: false,
+  removePostDone: false,
+  removePostError: null,
   addCommentLoading: false,
   addCommentDone: false,
   addCommentError: null,
 };
 
+initialState.mainPosts = initialState.mainPosts.concat(
+  Array(20)
+    .fill()
+    .map(() => ({
+      id: shortId.generate(),
+      User: {
+        id: shortId.generate(),
+        nickname: faker.name.findName(),
+      },
+      content: faker.lorem.paragraph(),
+      Images: [
+        {
+          src: faker.image.image(),
+        },
+      ],
+      Comments: [
+        {
+          User: {
+            id: shortId.generate(),
+            nickname: faker.name.findName(),
+          },
+          content: faker.lorem.sentence(),
+        },
+      ],
+    }))
+);
+
 // action type(action 이름)을 상수로 빼주면 switch문에서 재활용 가능
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
+
+export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
+export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
+export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 
 export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
@@ -68,62 +113,87 @@ export const addCommentRequestAction = (data) => {
   };
 };
 
-const dummyPost = {
-  id: 2,
-  content: '더미데이터입니다',
+const dummyPost = (data) => ({
+  id: data.id,
+  content: data.content,
   User: {
     id: 1,
     nickname: '제로초',
   },
   Images: [],
   Comments: [],
-};
+});
 
+const dummyComment = (data) => ({
+  id: shortId.generate(),
+  content: data,
+  User: {
+    id: 1,
+    nickname: '제로초',
+  },
+});
+
+// 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수(불변성은 지키면서)
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_POST_REQUEST:
-      return {
-        ...state,
-        addPostLoading: true,
-        addPostDone: false,
-        addPostError: null,
-      };
-    case ADD_POST_SUCCESS:
-      return {
-        ...state,
+  return produce(state, (draft) => {
+    // state의 이름이 draft로 바뀌고, 불변성과 상관없이 막 바꿔도 됨
+    // immer가 알아서 불변성 지키면서 다음 상태로 만들어줌
+    // 그래서 state는 건들지 말고 draft만 바꾸면 된다.
+    switch (action.type) {
+      case ADD_POST_REQUEST:
+        draft.addPostLoading = true;
+        draft.addPostDone = false;
+        draft.addPostError = null;
+        break;
+      case ADD_POST_SUCCESS:
+        draft.addPostLoading = false;
+        draft.addPostDone = true;
         // 앞에 추가해야 제일 위에 추가됨
-        mainPosts: [dummyPost, ...state.mainPosts],
-        addPostLoading: false,
-        addPostDone: true,
-      };
-    case ADD_POST_FAILURE:
-      return {
-        ...state,
-        addPostLoading: false,
-        addPostError: action.error,
-      };
-    case ADD_COMMENT_REQUEST:
-      return {
-        ...state,
-        addCommentLoading: true,
-        addCommentDone: false,
-        addCommentError: null,
-      };
-    case ADD_COMMENT_SUCCESS:
-      return {
-        ...state,
-        addCommentLoading: false,
-        addCommentDone: true,
-      };
-    case ADD_COMMENT_FAILURE:
-      return {
-        ...state,
-        addCommentLoading: false,
-        addCommentError: action.error,
-      };
-    default:
-      return state;
-  }
+        draft.mainPosts.unshift(dummyPost(action.data));
+        break;
+      case ADD_POST_FAILURE:
+        draft.addPostLoading = false;
+        draft.addPostError = action.error;
+        break;
+      case REMOVE_POST_REQUEST:
+        draft.removePostLoading = true;
+        draft.removePostDone = false;
+        draft.removePostError = null;
+        break;
+      case REMOVE_POST_SUCCESS:
+        draft.removePostLoading = false;
+        draft.removePostDone = true;
+        draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data);
+        break;
+      case REMOVE_POST_FAILURE:
+        draft.removePostLoading = false;
+        draft.removePostError = action.error;
+        break;
+      case ADD_COMMENT_REQUEST:
+        draft.addCommentLoading = true;
+        draft.addCommentDone = false;
+        draft.addCommentError = null;
+        break;
+      case ADD_COMMENT_SUCCESS:
+        const post = draft.mainPosts.find((v) => v.id === action.data.postId);
+        post.Comments.unshift(dummyComment(action.data.content));
+        draft.addCommentLoading = false;
+        draft.addCommentDone = true;
+        break;
+      // 불변성을 지키기 위해 원래는 아래와 같이 작성해야 했음
+      // const postIndex = state.mainPosts.findIndex((v) => v.id === action.data.postId);
+      // const post = { ...state.mainPosts[postIndex] };
+      // post.Comments = [dummyComment(action.data.content), ...post.Comments];
+      // mainPosts = [...state.mainPosts];
+      // mainPosts[postIndex] = post;
+      case ADD_COMMENT_FAILURE:
+        draft.addCommentLoading = false;
+        draft.addCommentError = action.error;
+        break;
+      default:
+        break;
+    }
+  });
 };
 
 export default reducer;
