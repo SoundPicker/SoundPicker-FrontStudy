@@ -3,51 +3,12 @@ import produce from 'immer';
 import faker from 'faker';
 
 export const initialState = {
-  mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: '제로초',
-      },
-      content: '첫 번째 게시글 #해시태그 #익스프레스',
-      Images: [
-        {
-          id: shortId.generate(),
-          src: 'https://www.daangn.com/images/meta/home/daangn.png',
-        },
-        {
-          id: shortId.generate(),
-          src:
-            'https://user-images.githubusercontent.com/1305982/50403650-44804500-07db-11e9-98aa-cfee9a9aec69.png',
-        },
-        {
-          id: shortId.generate(),
-          src:
-            'https://platum.kr/wp-content/uploads/2020/09/daangn_mau1000.jpg',
-        },
-      ],
-      Comments: [
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: 'nero',
-          },
-          content: '우와 개정판이 나왔군요~',
-        },
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: 'hero',
-          },
-          content: '얼른 사고싶어요~',
-        },
-      ],
-    },
-  ],
+  mainPosts: [],
   imagePaths: [],
+  hasMorePost: true,
+  loadPostsLoading: false,
+  loadPostsDone: false,
+  loadPostsError: null,
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
@@ -59,8 +20,8 @@ export const initialState = {
   addCommentError: null,
 };
 
-initialState.mainPosts = initialState.mainPosts.concat(
-  Array(20)
+export const generateDummyPost = (number) =>
+  Array(number)
     .fill()
     .map(() => ({
       id: shortId.generate(),
@@ -83,10 +44,15 @@ initialState.mainPosts = initialState.mainPosts.concat(
           content: faker.lorem.sentence(),
         },
       ],
-    }))
-);
+    }));
+
+initialState.mainPosts = initialState.mainPosts.concat();
 
 // action type(action 이름)을 상수로 빼주면 switch문에서 재활용 가능
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
+
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
@@ -99,19 +65,15 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
-export const addPostRequestAction = (data) => {
-  return {
-    type: ADD_POST_REQUEST,
-    data,
-  };
-};
+export const addPostRequestAction = (data) => ({
+  type: ADD_POST_REQUEST,
+  data,
+});
 
-export const addCommentRequestAction = (data) => {
-  return {
-    type: ADD_COMMENT_REQUEST,
-    data,
-  };
-};
+export const addCommentRequestAction = (data) => ({
+  type: ADD_COMMENT_REQUEST,
+  data,
+});
 
 const dummyPost = (data) => ({
   id: data.id,
@@ -134,12 +96,27 @@ const dummyComment = (data) => ({
 });
 
 // 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수(불변성은 지키면서)
-const reducer = (state = initialState, action) => {
-  return produce(state, (draft) => {
+const reducer = (state = initialState, action) =>
+  produce(state, (draft) => {
     // state의 이름이 draft로 바뀌고, 불변성과 상관없이 막 바꿔도 됨
     // immer가 알아서 불변성 지키면서 다음 상태로 만들어줌
     // 그래서 state는 건들지 말고 draft만 바꾸면 된다.
     switch (action.type) {
+      case LOAD_POSTS_REQUEST:
+        draft.loadPostsLoading = true;
+        draft.loadPostsDone = false;
+        draft.loadPostsError = null;
+        break;
+      case LOAD_POSTS_SUCCESS:
+        draft.loadPostsLoading = false;
+        draft.loadPostsDone = true;
+        draft.mainPosts = action.data.concat(draft.mainPosts);
+        draft.hasMorePost = draft.mainPosts.length < 50;
+        break;
+      case LOAD_POSTS_FAILURE:
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
+        break;
       case ADD_POST_REQUEST:
         draft.addPostLoading = true;
         draft.addPostDone = false;
@@ -174,12 +151,13 @@ const reducer = (state = initialState, action) => {
         draft.addCommentDone = false;
         draft.addCommentError = null;
         break;
-      case ADD_COMMENT_SUCCESS:
+      case ADD_COMMENT_SUCCESS: {
         const post = draft.mainPosts.find((v) => v.id === action.data.postId);
         post.Comments.unshift(dummyComment(action.data.content));
         draft.addCommentLoading = false;
         draft.addCommentDone = true;
         break;
+      }
       // 불변성을 지키기 위해 원래는 아래와 같이 작성해야 했음
       // const postIndex = state.mainPosts.findIndex((v) => v.id === action.data.postId);
       // const post = { ...state.mainPosts[postIndex] };
@@ -194,6 +172,5 @@ const reducer = (state = initialState, action) => {
         break;
     }
   });
-};
 
 export default reducer;
