@@ -20,20 +20,16 @@ import {
 } from '../reducers/user';
 
 function loginAPI(data) {
-  return axios.post('/api/login', data);
-}
-
-function signUpAPI(data) {
-  return axios.post('/api/signup', data);
+  return axios.post('/user/login', data);
 }
 
 function* logIn(action) {
   try {
-    // const result = yield call(loginAPI, action.data); //call은 동기라 return할때까지 기다렸다 넣어줌, fork는 비동기라 결과 오기 전에 바로 다음 거 실행
-    yield delay(1000);
+    //call은 동기라 return할때까지 기다렸다 넣어줌, fork는 비동기라 결과 오기 전에 바로 다음 거 실행
+    const result = yield call(loginAPI, action.data);
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -45,7 +41,7 @@ function* logIn(action) {
 }
 
 function logoutAPI() {
-  return axios.post('/api/logout');
+  return axios.post('/user/logout');
 }
 
 function* logOut() {
@@ -63,9 +59,14 @@ function* logOut() {
   }
 }
 
-function* signIn() {
+function signUpAPI(data) {
+  return axios.post('/user', data);
+}
+
+function* signUp(action) {
   try {
-    // const result = yield call(signUpAPI);
+    const result = yield call(signUpAPI, action.data);
+    console.log(result);
     yield put({
       type: SIGN_UP_SUCCESS,
     });
@@ -114,7 +115,7 @@ function* watchLogOut() {
 }
 
 function* watchSignUp() {
-  yield takeLatest(SIGN_UP_REQUEST, signIn);
+  yield takeLatest(SIGN_UP_REQUEST, signUp);
 }
 
 function* watchFollow() {
