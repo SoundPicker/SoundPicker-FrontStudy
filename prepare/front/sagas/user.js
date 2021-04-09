@@ -46,7 +46,7 @@ function logoutAPI() {
 
 function* logOut() {
   try {
-    // const result = yield call(logoutAPI); //call은 동기라 return할때까지 기다렸다 넣어줌, fork는 비동기라 결과 오기 전에 바로 다음 거 실행
+    yield call(logoutAPI); //call은 동기라 return할때까지 기다렸다 넣어줌, fork는 비동기라 결과 오기 전에 바로 다음 거 실행
     yield put({
       type: LOG_OUT_SUCCESS,
     });

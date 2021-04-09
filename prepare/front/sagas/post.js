@@ -1,4 +1,4 @@
-import { all, fork, put, takeLatest, delay } from 'redux-saga//effects';
+import { all, fork, put, takeLatest, call } from 'redux-saga//effects';
 import axios from 'axios';
 import shortId from 'shortid';
 
@@ -23,16 +23,8 @@ function loadPostsAPI() {
   return axios.get('/api/post');
 }
 
-function addPostAPI(data) {
-  return axios.post('/api/post', data);
-}
-
 function removePostAPI(data) {
   return axios.delete('/api/post', data);
-}
-
-function addCommentAPI(data) {
-  return axios.post('/api/post/${data.postId}/comment', data);
 }
 
 function* loadPosts() {
@@ -50,23 +42,22 @@ function* loadPosts() {
   }
 }
 
+function addPostAPI(data) {
+  return axios.post('/post', { content: data });
+}
+
 function* addPost(action) {
   try {
     // call은 동기라 return할때까지 기다렸다 넣어줌
     // fork는 비동기라 결과 오기 전에 바로 다음 거 실행
-    // const result = yield call(addPostAPI, action.data);
-    delay(1000);
-    const id = shortId.generate();
+    const result = yield call(addPostAPI, action.data);
     yield put({
       type: ADD_POST_SUCCESS,
-      data: {
-        id,
-        content: action.data,
-      },
+      data: result.data,
     });
     yield put({
       type: ADD_POST_TO_ME,
-      data: id,
+      data: result.data.id,
     });
   } catch (err) {
     yield put({
@@ -96,12 +87,16 @@ function* removePost(action) {
   }
 }
 
+function addCommentAPI(data) {
+  return axios.post(`/post/${data.postId}/comment`, data); // POST /post/1/comment
+}
+
 function* addComment(action) {
   try {
-    // const result = yield call(addCommentAPI, action.data);
+    const result = yield call(addCommentAPI, action.data);
     yield put({
       type: ADD_COMMENT_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({

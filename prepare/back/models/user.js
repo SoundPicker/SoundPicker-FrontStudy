@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    'user',
+    'User',
     {
       // MySQL에는 users 테이블 생성
       // id가 기본적으로 들어있다.
@@ -30,12 +30,12 @@ module.exports = (sequelize, DataTypes) => {
     db.User.belongsToMany(db.User, {
       through: 'Follow',
       foreignKey: 'FollowingId',
-      as: 'Following',
+      as: 'Followings',
     });
     db.User.belongsToMany(db.User, {
       through: 'Follow',
       foreignKey: 'FollowerId',
-      as: 'Follower',
+      as: 'Followers',
     });
   };
   return User;

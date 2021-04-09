@@ -9,14 +9,16 @@ import FollowList from '../components/FollowList';
 
 const Profile = () => {
   const { me } = useSelector((state) => state.user);
+  console.log(me);
 
   if (!me) {
     return null;
   }
 
   useEffect(() => {
-    if (!me && me.id) {
-      Router.push('/');
+    if (!(me && me.id)) {
+      // 왜 replace가 안 되지???
+      Router.replace('/');
     }
   }, [me && me.id]);
 
