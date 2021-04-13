@@ -7,6 +7,43 @@ const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 
 const router = express.Router();
 
+router.get('/', async (req, res, next) => {
+  // GET /user
+  try {
+    // 로그인되어 있지 않더라도 새로고침만 하면 이 요청이 가기 때문에 req.user 있는지 확인 필요
+    if (req.user) {
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          exclude: ['password'],
+        },
+        include: [
+          {
+            model: Post,
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+        ],
+      });
+      res.status(200).json(fullUserWithoutPassword);
+    } else {
+      res.status(200).json(null);
+    }
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
 router.post('/', isNotLoggedIn, async (req, res, next) => {
   // POST /user
   try {
@@ -58,14 +95,17 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
           include: [
             {
               model: Post,
+              attributes: ['id'],
             },
             {
               model: User,
               as: 'Followings',
+              attributes: ['id'],
             },
             {
               model: User,
               as: 'Followers',
+              attributes: ['id'],
             },
           ],
         });
@@ -82,6 +122,23 @@ router.post('/logout', isLoggedIn, (req, res) => {
   req.logout();
   req.session.destroy();
   res.send('ok');
+});
+
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+  try {
+    await User.update(
+      {
+        nickname: req.body.nickname,
+      },
+      {
+        where: { id: req.user.id },
+      }
+    );
+    res.status(200).json({ nickname: req.body.nickname });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 module.exports = router;

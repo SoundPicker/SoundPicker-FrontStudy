@@ -1,6 +1,5 @@
 import { all, fork, put, takeLatest, call } from 'redux-saga//effects';
 import axios from 'axios';
-import shortId from 'shortid';
 
 import {
   ADD_POST_REQUEST,
@@ -9,30 +8,31 @@ import {
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
   REMOVE_POST_FAILURE,
+  LIKE_POST_REQUEST,
+  LIKE_POST_SUCCESS,
+  LIKE_POST_FAILURE,
+  UNLIKE_POST_REQUEST,
+  UNLIKE_POST_SUCCESS,
+  UNLIKE_POST_FAILURE,
   ADD_COMMENT_REQUEST,
   ADD_COMMENT_SUCCESS,
   ADD_COMMENT_FAILURE,
   LOAD_POSTS_REQUEST,
   LOAD_POSTS_SUCCESS,
   LOAD_POSTS_FAILURE,
-  generateDummyPost,
 } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 function loadPostsAPI() {
-  return axios.get('/api/post');
-}
-
-function removePostAPI(data) {
-  return axios.delete('/api/post', data);
+  return axios.get('/posts');
 }
 
 function* loadPosts() {
   try {
-    // const result = yield call(loadPostsAPI);
+    const result = yield call(loadPostsAPI);
     yield put({
       type: LOAD_POSTS_SUCCESS,
-      data: generateDummyPost(10),
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -60,6 +60,7 @@ function* addPost(action) {
       data: result.data.id,
     });
   } catch (err) {
+    console.error(err);
     yield put({
       // put은 dispatch 개념
       type: ADD_POST_FAILURE,
@@ -68,20 +69,63 @@ function* addPost(action) {
   }
 }
 
+function removePostAPI(data) {
+  // delete는 data 못 넣음
+  return axios.delete(`/post/${data}`);
+}
+
 function* removePost(action) {
   try {
-    // const result = yield call(removePostAPI, action.data);
+    const result = yield call(removePostAPI, action.data);
     yield put({
       type: REMOVE_POST_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
     yield put({
       type: REMOVE_POST_OF_ME,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: REMOVE_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function likePostAPI(data) {
+  return axios.patch(`/post/${data}/like`); // 게시글의 일부분 수정이므로 patch
+}
+
+function* likePost(action) {
+  try {
+    const result = yield call(likePostAPI, action.data);
+    yield put({
+      type: LIKE_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LIKE_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function unlikePostAPI(data) {
+  return axios.delete(`/post/${data}/like`); // 게시글의 일부분 수정이므로 patch
+}
+
+function* unlikePost(action) {
+  try {
+    const result = yield call(unlikePostAPI, action.data);
+    yield put({
+      type: UNLIKE_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: UNLIKE_POST_FAILURE,
       error: err.response.data,
     });
   }
@@ -118,6 +162,14 @@ function* watchRemovePost() {
   yield takeLatest(REMOVE_POST_REQUEST, removePost);
 }
 
+function* watchLikePost() {
+  yield takeLatest(LIKE_POST_REQUEST, likePost);
+}
+
+function* watchUnLikePost() {
+  yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
+}
+
 function* watchAddComment() {
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
@@ -127,6 +179,8 @@ export default function* postSaga() {
     fork(watchLoadPosts),
     fork(watchAddPost),
     fork(watchRemovePost),
+    fork(watchLikePost),
+    fork(watchUnLikePost),
     fork(watchAddComment),
   ]);
 }
