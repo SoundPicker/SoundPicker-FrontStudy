@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const path = require('path');
 
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
@@ -34,6 +35,7 @@ app.use(
     credentials: true,
   })
 );
+app.use('/', express.static(path.join(__dirname, 'uploads')));
 // app.use()는 express 서버에서 무언가를 장착한다는 뜻
 // 아래 두 줄의 역할은 프론트에서 보낸 데이터를 req body 안에 넣어주는 역할
 app.use(express.json()); // 프론트에서 json 형식으로 데이터를 보냈을 때 json 형식의 데이터를 req body안에 넣어주고
