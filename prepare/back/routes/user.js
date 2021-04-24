@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   // GET /user
+  console.log(req.headers);
   try {
     // 로그인되어 있지 않더라도 새로고침만 하면 이 요청이 가기 때문에 req.user 있는지 확인 필요
     if (req.user) {

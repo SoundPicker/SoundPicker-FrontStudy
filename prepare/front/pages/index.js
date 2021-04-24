@@ -1,28 +1,31 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { END } from 'redux-saga';
+import axios from 'axios';
 
 import AppLayout from '../components/AppLayout';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
 import { LOAD_POSTS_REQUEST } from '../reducers/post';
 import { LOAD_MY_INFO_REQUEST } from '../reducers/user';
+import wrapper from '../store/configureStore';
 
 const Home = () => {
   const dispatch = useDispatch();
 
   const { me } = useSelector((state) => state.user);
-  const { mainPosts, hasMorePost, loadPostsLoading } = useSelector(
-    (state) => state.post
-  );
+  const {
+    mainPosts,
+    hasMorePost,
+    loadPostsLoading,
+    retweetError,
+  } = useSelector((state) => state.post);
 
   useEffect(() => {
-    dispatch({
-      type: LOAD_MY_INFO_REQUEST,
-    });
-    dispatch({
-      type: LOAD_POSTS_REQUEST,
-    });
-  }, []);
+    if (retweetError) {
+      return alert(retweetError);
+    }
+  }, [retweetError]);
 
   useEffect(() => {
     function onScroll() {
@@ -37,8 +40,10 @@ const Home = () => {
       ) {
         // post를 불러오고 있는 중이라면 request 보내지 못하게
         if (hasMorePost && !loadPostsLoading) {
+          const lastId = mainPosts[mainPosts.length - 1]?.id;
           dispatch({
             type: LOAD_POSTS_REQUEST,
+            lastId,
           });
         }
       }
@@ -58,5 +63,25 @@ const Home = () => {
     </AppLayout>
   );
 };
+
+// 프론트 서버에서 실행됨
+// Home보다 먼저 실행됨
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    const cookie = context.req ? context.req.headers.cookie : '';
+    axios.defaults.headers.Cookie = '';
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    context.store.dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    });
+    context.store.dispatch({
+      type: LOAD_POSTS_REQUEST,
+    });
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
+);
 
 export default Home;
