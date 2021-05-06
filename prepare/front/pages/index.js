@@ -66,6 +66,7 @@ const Home = () => {
 
 // 프론트 서버에서 실행됨
 // Home보다 먼저 실행됨
+// 접속할 때마다 화면이 바뀌어야 하면 getServerSideProps, 대부분 이것을 사용
 export const getServerSideProps = wrapper.getServerSideProps(
   async (context) => {
     const cookie = context.req ? context.req.headers.cookie : '';

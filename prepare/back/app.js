@@ -10,6 +10,7 @@ const path = require('path');
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
 const userRouter = require('./routes/user');
+const hashtagRouter = require('./routes/hashtag');
 const db = require('./models');
 const passportConfig = require('./passport');
 
@@ -70,6 +71,7 @@ app.get('/', (req, res) => {
 app.use('/posts', postsRouter);
 app.use('/post', postRouter);
 app.use('/user', userRouter);
+app.use('/hashtag', hashtagRouter);
 
 // 내부적으로 에러 처리 미들웨어가 존재
 app.use((err, req, res, next) => {});
