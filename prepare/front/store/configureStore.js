@@ -28,10 +28,6 @@ const configureStore = () => {
 
   const store = createStore(reducer, enhancer);
   store.sagaTask = sagaMiddleware.run(rootSaga);
-  store.dispatch({
-    type: 'CHANGE_NICKNAME',
-    data: 'boogicho',
-  });
   return store;
 };
 
