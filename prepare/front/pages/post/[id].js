@@ -17,6 +17,10 @@ const Post = () => {
   const { id } = router.query;
   const { singlePost } = useSelector((state) => state.post);
 
+  // if (router.isFallback) {
+  //   return <div>로딩중...</div>;
+  // }
+
   return (
     <AppLayout>
       <Head>
@@ -44,6 +48,22 @@ const Post = () => {
     </AppLayout>
   );
 };
+
+// html로 미리 만들어둘만한 페이지만 미리 가져오기
+// 다이나믹 라우팅일때는 getStaticPaths + getStaticProps
+// export async function getStaticPaths() {
+//   return {
+//     paths: [
+//       { params: { id: '1' } },
+//       { params: { id: '2' } },
+//       { params: { id: '3' } },
+//     ],
+//     // fallback을 false로 하면 params에 없으면 에러가 뜸
+//     // fallback을 true로 하면 ssr이 안됨
+//     // fallback이 true인데 params에 현재 경로가 없으면 서버로부터 가져옴, 그동안은 로딩중...이 뜸
+//     fallback: true,
+//   };
+// }
 
 export const getServerSideProps = wrapper.getServerSideProps(
   async (context) => {

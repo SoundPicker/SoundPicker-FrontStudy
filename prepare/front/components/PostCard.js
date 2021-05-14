@@ -9,6 +9,8 @@ import {
   MessageOutlined,
   EllipsisOutlined,
 } from '@ant-design/icons';
+import Link from 'next/link';
+import dayjs from 'dayjs';
 
 import PostImages from './PostImage';
 import CommentForm from './CommentForm';
@@ -20,6 +22,8 @@ import {
   UNLIKE_POST_REQUEST,
   RETWEET_REQUEST,
 } from '../reducers/post';
+
+dayjs.locale('ko');
 
 const PostCard = ({ post }) => {
   const dispatch = useDispatch();
@@ -134,18 +138,38 @@ const PostCard = ({ post }) => {
               )
             }
           >
+            <div style={{ float: 'right' }}>
+              {dayjs(post.createdAt).format('YYYY년 MM월 DD일')}
+            </div>
             <Card.Meta
-              avatar={<Avatar>{post.Retweet.User.nickname[0]}</Avatar>}
+              avatar={
+                <Link href={`/user/${post.User.id}`}>
+                  <a>
+                    <Avatar>{post.User.nickname[0]}</Avatar>
+                  </a>
+                </Link>
+              }
               title={post.Retweet.User.nickname}
               description={<PostCardContent postData={post.Retweet.content} />}
             />
           </Card>
         ) : (
-          <Card.Meta
-            avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
-            title={post.User.nickname}
-            description={<PostCardContent postData={post.content} />}
-          />
+          <>
+            <div style={{ float: 'right' }}>
+              {dayjs(post.createdAt).format('YYYY년 MM월 DD일')}
+            </div>
+            <Card.Meta
+              avatar={
+                <Link href={`/user/${post.User.id}`}>
+                  <a>
+                    <Avatar>{post.User.nickname[0]}</Avatar>
+                  </a>
+                </Link>
+              }
+              title={post.User.nickname}
+              description={<PostCardContent postData={post.content} />}
+            />
+          </>
         )}
       </Card>
       {commentFormOpened && (
@@ -159,7 +183,13 @@ const PostCard = ({ post }) => {
               <li>
                 <Comment
                   author={item.User.nickname}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  avatar={
+                    <Link href={`/user/${item.User.id}`}>
+                      <a>
+                        <Avatar>{item.User.nickname[0]}</Avatar>
+                      </a>
+                    </Link>
+                  }
                   content={item.content}
                 />
               </li>
