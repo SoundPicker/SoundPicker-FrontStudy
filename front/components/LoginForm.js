@@ -5,8 +5,11 @@ import styled from "styled-components";
 const ButtonWrapper = styled.div`
     margin-top: 10px;
 `;
+const FormWrapper = styled(Form)`
+    padding:10px;
+`;
 
-const LoginForm = () => {
+const LoginForm = ({setIsLoggedIn}) => {
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     // 컴포넌트의 프롭스로 들어가는 함수들은 useCallback을 꼭 써달다
@@ -16,9 +19,13 @@ const LoginForm = () => {
     const onChangePassword = useCallback((e)=>{
         setPassword(e.target.value);
     },[]);
+    const onSubmitForm = useCallback(()=>{
+        console.log(id,password);
+        setIsLoggedIn(true);
+    },[id, password]);
 
     return(     
-        <Form>
+        <FormWrapper onFinish={onSubmitForm}>
             <div>
                 <label htmlFor="user-id">아이디</label>
                 <br />
@@ -34,7 +41,7 @@ const LoginForm = () => {
                 <Button type="primary" htmlType="submit" loading={false}>로그인</Button>
                 <Link href="/signup"><a><Button>회원가입</Button></a></Link>
             </ButtonWrapper>
-        </Form>
+        </FormWrapper>
     );
 
 }
